@@ -1,9 +1,9 @@
 CFLAGS=-Wall -g
 
-all:  ex7
+all:  ex8
 
-ex7:
-	cc -Wall -g ex7.c -o ex7
+ex8:
+	cc -Wall -g ex8.c -o ex8
 
 clean:
 	# delete any file without extension except for Makefile
