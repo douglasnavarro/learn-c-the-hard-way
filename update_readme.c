@@ -2,24 +2,81 @@
 This program reads the directories list, detects the latest exercise
 on the root directory and updates readme.md file with an estimate
 progress considering the total amount of exercises on the course
+
+I know I could have written this using another language, but it
+wouldnt feel right :/
 */
 
 #define TOTAL_EXERCISES 30
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char *str_replace(char *org, char *rep, char *with);
 
 int main(int argc, char *argv[])
 {
-    char * buffer = 0;
+    char * buffer_template = 0;
+    char * buffer_replaced = 0;
     long length;
-    FILE * f = fopen ("./README.md", "rb");
+    FILE * f = fopen ("./README_template.md", "rb");
     fseek(f, 0, SEEK_END);
     length = ftell(f);
     fseek(f, 0, SEEK_SET);
-    buffer = malloc(length);
-    if(buffer)
+    buffer_template = malloc(length);
+    if(buffer_template)
     {
-        fread(buffer, 1, length, f);
+        fread(buffer_template, 1, length, f);
     }
     fclose(f);
-    printf("%s", buffer);
+    printf("%s", buffer_template);
+    buffer_replaced = str_replace(buffer_template, "#progress#", "75");
+    printf("%s", buffer_replaced);
+}
+
+// You must free the result if result is non-NULL.
+char *str_replace(char *orig, char *rep, char *with) {
+    char *result; // the return string
+    char *ins;    // the next insert point
+    char *tmp;    // varies
+    int len_rep;  // length of rep (the string to remove)
+    int len_with; // length of with (the string to replace rep with)
+    int len_front; // distance between rep and end of last rep
+    int count;    // number of replacements
+
+    // sanity checks and initialization
+    if (!orig || !rep)
+        return NULL;
+    len_rep = strlen(rep);
+    if (len_rep == 0)
+        return NULL; // empty rep causes infinite loop during count
+    if (!with)
+        with = "";
+    len_with = strlen(with);
+
+    // count the number of replacements needed
+    ins = orig;
+    for (count = 0; tmp = strstr(ins, rep); ++count) {
+        ins = tmp + len_rep;
+    }
+
+    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+
+    if (!result)
+        return NULL;
+
+    // first time through the loop, all the variable are set correctly
+    // from here on,
+    //    tmp points to the end of the result string
+    //    ins points to the next occurrence of rep in orig
+    //    orig points to the remainder of orig after "end of rep"
+    while (count--) {
+        ins = strstr(orig, rep);
+        len_front = ins - orig;
+        tmp = strncpy(tmp, orig, len_front) + len_front;
+        tmp = strcpy(tmp, with) + len_with;
+        orig += len_front + len_rep; // move to next "end of rep"
+    }
+    strcpy(tmp, orig);
+    return result;
 }
