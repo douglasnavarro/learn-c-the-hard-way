@@ -7,35 +7,45 @@ I know I could have written this using another language, but it
 wouldnt feel right :/
 */
 
-#define TOTAL_EXERCISES 30
+#define TOTAL_EXERCISES 52
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 
 char *str_replace(char *org, char *rep, char *with);
+int latest_exs();
 
 int main(int argc, char *argv[])
 {
-    char * buffer_template = 0;
-    char * buffer_replaced = 0;
-    long length;
-    FILE * f = fopen ("./README_template.md", "rb");
-    fseek(f, 0, SEEK_END);
-    length = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    buffer_template = malloc(length);
-    if(buffer_template)
-    {
-        fread(buffer_template, 1, length, f);
-    }
-    fclose(f);
-    printf("%s", buffer_template);
-    buffer_replaced = str_replace(buffer_template, "#progress#", "75");
-    printf("%s", buffer_replaced);
+    // char * buffer_template = 0;
+    // char * buffer_replaced = 0;
+    // long length;
+    // int progress = (latest_exs() / TOTAL_EXERCISES) * 100;
+    // char* progress_str;
+    // sprintf(progress_str, "%d", progress);
+
+    // FILE * f = fopen ("./README_template.md", "rb");
+    // fseek(f, 0, SEEK_END);
+    // length = ftell(f);
+    // fseek(f, 0, SEEK_SET);
+    // buffer_template = malloc(length);
+    // if(buffer_template)
+    // {
+    //     fread(buffer_template, 1, length, f);
+    // }
+    // fclose(f);
+
+    // printf("%s", buffer_template);
+    // buffer_replaced = str_replace(buffer_template, "#progress#", progress_str);
+    // printf("%s", buffer_replaced);
+    printf("%d\n", latest_exs());
+    return 0;
 }
 
 // You must free the result if result is non-NULL.
-char *str_replace(char *orig, char *rep, char *with) {
+char *str_replace(char *orig, char *rep, char *with) 
+{
     char *result; // the return string
     char *ins;    // the next insert point
     char *tmp;    // varies
@@ -79,4 +89,36 @@ char *str_replace(char *orig, char *rep, char *with) {
     }
     strcpy(tmp, orig);
     return result;
+}
+
+int latest_exs()
+{
+    DIR *dir;
+    struct dirent *ent;
+    dir = opendir(".");
+    int number = 0;
+    int result = 0;
+
+    if(dir != NULL)
+    {
+        ent = readdir(dir);
+        while( ent != NULL )
+        {
+            char *name = ent -> d_name;
+            sscanf(name, "ex%d", &number);
+            if(number > result)
+            {
+                result = number;
+            }
+            ent = readdir(dir);
+        }
+        free(dir);
+        free(ent);
+        return result;
+    }
+    else
+    {
+        printf("Opendir failed! Code %d\n", EXIT_FAILURE);
+        return EXIT_FAILURE;
+    }
 }
