@@ -22,9 +22,7 @@ int main(int argc, char *argv[])
     char str_progress[3];
     float float_progress = (latest_exs() / (float) TOTAL_EXERCISES) * 100;
     sprintf(str_progress, "%.0f", float_progress);
-    create_file(str_progress);
-    return 0;
-    
+    return(create_file(str_progress));
 }
 
 // You must free the result if result is non-NULL.
@@ -109,23 +107,35 @@ int latest_exs()
 
 int create_file(char* progress)
 {
-    char * buffer_template = 0;
-    char * buffer_replaced = 0;
+    char * buffer_template;
+    char * buffer_replaced;
     long length;
 
     FILE * f = fopen ("./README_template.md", "rb");
+    if (f==NULL)
+    {
+        return 1;
+    }
     fseek(f, 0, SEEK_END);
     length = ftell(f);
     fseek(f, 0, SEEK_SET);
-    buffer_template = malloc(length);
+    buffer_template = malloc(length + sizeof(char));
     if(buffer_template)
     {
         fread(buffer_template, 1, length, f);
     }
     fclose(f);
-
-    printf("%s", buffer_template);
     buffer_replaced = str_replace(buffer_template, "#progress#", progress);
-    printf("%s", buffer_replaced);
+    FILE * g = fopen("./README.md", "wb");
+    if( g == NULL)
+    {
+        free(buffer_template);
+        free(buffer_replaced);
+        return 1;
+    }
+    fputs(buffer_replaced, g);
+    fclose(g);
+    free(buffer_replaced);
+    free(buffer_template);
     return 0;
 }
