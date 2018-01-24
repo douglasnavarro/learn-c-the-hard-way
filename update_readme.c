@@ -20,7 +20,10 @@ int create_file();
 int main(int argc, char *argv[])
 {
     char str_progress[3];
-    float float_progress = (latest_exs() / (float) TOTAL_EXERCISES) * 100;
+    int latest = latest_exs();
+    printf("latest is %d\n", latest);
+    float float_progress = (latest / (float) TOTAL_EXERCISES) * 100;
+    printf("float_progress is %.0f\n", float_progress);
     sprintf(str_progress, "%.0f", float_progress);
     return(create_file(str_progress));
 }
@@ -77,7 +80,7 @@ int latest_exs()
 {
     DIR *dir;
     struct dirent *ent;
-    dir = opendir(".");
+    dir = opendir("./exercises");
     int number = 0;
     int result = 0;
 
