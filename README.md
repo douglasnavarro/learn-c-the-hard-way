@@ -1,6 +1,6 @@
 ## Learn C the hard way - Personal report
 
-![Progress](http://progressed.io/bar/25?title=progress)
+![Progress](http://progressed.io/bar/0?title=progress)
 
 This repository is used to provide an overview of the progress on the Learn C the hard way course. A secondary purpose is to backup code used in exercises, even though there are many repositories on github with those.
 
